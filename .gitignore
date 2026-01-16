@@ -1,0 +1,8 @@
+/.vscode
+/.cache
+compile_commands.json
+
+/bin
+/build
+
+/lib/ImGui/CMakeLists.txt
