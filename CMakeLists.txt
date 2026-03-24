@@ -58,11 +58,19 @@ target_sources(Vulkaning PRIVATE
 add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
 add_subdirectory(lib/ImGui EXCLUDE_FROM_ALL)
 add_subdirectory(lib/GLM EXCLUDE_FROM_ALL)
-add_subdirectory(lib/VulkanMemoryAllocator EXCLUDE_FROM_ALL)
+add_subdirectory(lib/vma EXCLUDE_FROM_ALL)
 add_subdirectory(lib/vk-bootstrap EXCLUDE_FROM_ALL)
 add_subdirectory(lib/TinyObjLoader EXCLUDE_FROM_ALL)
-add_subdirectory(lib/Slang EXCLUDE_FROM_ALL)
-add_subdirectory(lib/Volk EXCLUDE_FROM_ALL)
+add_subdirectory(lib/volk EXCLUDE_FROM_ALL)
+find_package(slang REQUIRED)
+
+# ImGui
+target_compile_definitions(Vulkaning PRIVATE
+    VOLK_IMPLEMENTATION
+    VK_NO_PROTOTYPES
+    VMA_IMPLEMENTATION
+    TINYOBJLOADER_IMPLEMENTATION
+)
 
 # Link libraries to executable
 target_link_libraries(Vulkaning PRIVATE
@@ -74,7 +82,7 @@ target_link_libraries(Vulkaning PRIVATE
     glm
     tinyobjloader
     ImGui
-    slang
+    slang::slang
 )
 
 # Move some shared libraries to the same folder as the executable
@@ -90,9 +98,5 @@ add_custom_command(TARGET Vulkaning POST_BUILD
         $<TARGET_FILE_DIR:Vulkaning>
 )
 
-# Move debug stuff to right folder
-add_custom_command(TARGET Vulkaning POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PROJECT_SOURCE_DIR}/bin/compile_commands.json"
-        "${PROJECT_SOURCE_DIR}"
-)
+# Enable clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

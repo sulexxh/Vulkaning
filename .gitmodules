@@ -20,13 +20,9 @@
 	url = https://github.com/tinyobjloader/tinyobjloader.git
 
 [submodule "lib/VulkanMemoryAllocator"]
-	path = lib/VulkanMemoryAllocator
+	path = lib/vma
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
 
-[submodule "lib/Slang"]
-	path = lib/Slang
-	url = https://github.com/shader-slang/slang.git
-
-[submodule "lib/Volk"]
-	path = lib/Volk
+[submodule "lib/volk"]
+	path = lib/volk
 	url = https://github.com/zeux/volk.git
