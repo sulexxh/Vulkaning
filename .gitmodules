@@ -23,3 +23,10 @@
 	path = lib/VulkanMemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
 
+[submodule "lib/Slang"]
+	path = lib/Slang
+	url = https://github.com/shader-slang/slang.git
+
+[submodule "lib/Volk"]
+	path = lib/Volk
+	url = https://github.com/zeux/volk.git

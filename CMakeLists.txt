@@ -47,7 +47,12 @@ elseif (UNIX)
 endif()
 
 # Add source code to executable
-target_sources(Vulkaning PRIVATE src/main.cpp)
+target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_sources(Vulkaning PRIVATE
+    src/main.cpp
+)
 
 # Add libraries
 add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
@@ -56,6 +61,8 @@ add_subdirectory(lib/GLM EXCLUDE_FROM_ALL)
 add_subdirectory(lib/VulkanMemoryAllocator EXCLUDE_FROM_ALL)
 add_subdirectory(lib/vk-bootstrap EXCLUDE_FROM_ALL)
 add_subdirectory(lib/TinyObjLoader EXCLUDE_FROM_ALL)
+add_subdirectory(lib/Slang EXCLUDE_FROM_ALL)
+add_subdirectory(lib/Volk EXCLUDE_FROM_ALL)
 
 # Link libraries to executable
 target_link_libraries(Vulkaning PRIVATE
@@ -63,9 +70,11 @@ target_link_libraries(Vulkaning PRIVATE
     Vulkan::Vulkan
     VulkanMemoryAllocator
     vk-bootstrap
+    volk
     glm
     tinyobjloader
     ImGui
+    slang
 )
 
 # Move some shared libraries to the same folder as the executable
@@ -79,4 +88,11 @@ add_custom_command(TARGET Vulkaning POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:vk-bootstrap>
         $<TARGET_FILE_DIR:Vulkaning>
+)
+
+# Move debug stuff to right folder
+add_custom_command(TARGET Vulkaning POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${PROJECT_SOURCE_DIR}/bin/compile_commands.json"
+        "${PROJECT_SOURCE_DIR}"
 )
