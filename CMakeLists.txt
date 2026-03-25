@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.23)
 project(Vulkaning LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/app")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/app")
 
 # SDL3 Compilation flags
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
@@ -29,11 +29,54 @@ set(SDL_INSTALL OFF CACHE BOOL "" FORCE)
 set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SDL_ASSEMBLY OFF CACHE BOOL "" FORCE)
 
-# Vulkan
+# Add libraries
+add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
+add_subdirectory(lib/GLM EXCLUDE_FROM_ALL)
+add_subdirectory(lib/vma EXCLUDE_FROM_ALL)
+add_subdirectory(lib/vk-bootstrap EXCLUDE_FROM_ALL)
+add_subdirectory(lib/TinyObjLoader EXCLUDE_FROM_ALL)
+add_subdirectory(lib/volk EXCLUDE_FROM_ALL)
+find_package(slang REQUIRED)
 find_package(Vulkan REQUIRED)
+
+# Enable Wayland for Vulkan
+if (LINUX)
+    set(CMAKE_CXX_FLAG "${CMAKE_CXX_FLAGS} -DVK_USE_PLATFORM_WAYLAND_KHR")
+endif()
+
+# ImGui library creation (It don't have CMakeLists.txt)
+add_library(ImGui SHARED
+    lib/ImGui/imgui.cpp
+    lib/ImGui/imgui_draw.cpp
+    lib/ImGui/imgui_tables.cpp
+    lib/ImGui/imgui_widgets.cpp
+    lib/ImGui/backends/imgui_impl_sdl3.cpp
+    lib/ImGui/backends/imgui_impl_vulkan.cpp
+)
+
+target_include_directories(ImGui PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/ImGui/..
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/ImGui/
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/ImGui/backends
+)
+
+target_compile_definitions(ImGui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+
+target_link_libraries(ImGui PUBLIC
+    SDL3::SDL3
+    Vulkan::Vulkan
+)
 
 # Create final executable
 add_executable(Vulkaning)
+
+# Add source code to executable
+target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_sources(Vulkaning PRIVATE
+    src/main.cpp
+)
 
 # Make the executable look for shared libraries in its own directory
 if (APPLE)
@@ -46,25 +89,8 @@ elseif (UNIX)
     )
 endif()
 
-# Add source code to executable
-target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_sources(Vulkaning PRIVATE
-    src/main.cpp
-)
-
-# Add libraries
-add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
-add_subdirectory(lib/ImGui EXCLUDE_FROM_ALL)
-add_subdirectory(lib/GLM EXCLUDE_FROM_ALL)
-add_subdirectory(lib/vma EXCLUDE_FROM_ALL)
-add_subdirectory(lib/vk-bootstrap EXCLUDE_FROM_ALL)
-add_subdirectory(lib/TinyObjLoader EXCLUDE_FROM_ALL)
-add_subdirectory(lib/volk EXCLUDE_FROM_ALL)
-find_package(slang REQUIRED)
-
-# ImGui
+# Fix duplicate definitions from ImGui
 target_compile_definitions(Vulkaning PRIVATE
     VOLK_IMPLEMENTATION
     VK_NO_PROTOTYPES
