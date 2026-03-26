@@ -26,3 +26,7 @@
 [submodule "lib/volk"]
 	path = lib/volk
 	url = https://github.com/zeux/volk.git
+
+[submodule "lib/kt"]
+	path = lib/ktx
+	url = https://github.com/KhronosGroup/KTX-Software.git

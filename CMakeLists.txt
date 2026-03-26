@@ -29,6 +29,11 @@ set(SDL_INSTALL OFF CACHE BOOL "" FORCE)
 set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SDL_ASSEMBLY OFF CACHE BOOL "" FORCE)
 
+# KTX Compilation flags
+set(KTX_FEATURE_STATIC_LIBRARY ON CACHE BOOL "" FORCE)
+set(KTX_FEATURE_LOADTEST_APPS OFF CACHE BOOL "" FORCE)
+set(KTX_FEATURE_TESTS OFF CACHE BOOL "" FORCE)
+
 # Add libraries
 add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
 add_subdirectory(lib/GLM EXCLUDE_FROM_ALL)
@@ -36,6 +41,7 @@ add_subdirectory(lib/vma EXCLUDE_FROM_ALL)
 add_subdirectory(lib/vk-bootstrap EXCLUDE_FROM_ALL)
 add_subdirectory(lib/TinyObjLoader EXCLUDE_FROM_ALL)
 add_subdirectory(lib/volk EXCLUDE_FROM_ALL)
+add_subdirectory(lib/ktx EXCLUDE_FROM_ALL)
 find_package(slang REQUIRED)
 find_package(Vulkan REQUIRED)
 
@@ -89,7 +95,6 @@ elseif (UNIX)
     )
 endif()
 
-
 # Fix duplicate definitions from ImGui
 target_compile_definitions(Vulkaning PRIVATE
     VOLK_IMPLEMENTATION
@@ -109,6 +114,7 @@ target_link_libraries(Vulkaning PRIVATE
     tinyobjloader
     ImGui
     slang::slang
+    ktx
 )
 
 # Move some shared libraries to the same folder as the executable
@@ -121,6 +127,12 @@ add_custom_command(TARGET Vulkaning POST_BUILD
 add_custom_command(TARGET Vulkaning POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:vk-bootstrap>
+        $<TARGET_FILE_DIR:Vulkaning>
+)
+
+add_custom_command(TARGET Vulkaning POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ktx>
         $<TARGET_FILE_DIR:Vulkaning>
 )
 
