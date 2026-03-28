@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/app")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/app")
-
+set(CMAKE_CURRENT_BINARY_DIR "${PROJECT_SOURCE_DIR}/bin/app")
 # SDL3 Compilation flags
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
@@ -117,7 +117,7 @@ target_link_libraries(Vulkaning PRIVATE
     ktx
 )
 
-# Move some shared libraries to the same folder as the executable
+# Move some shared libraries and files to the same folder as the executable
 add_custom_command(TARGET Vulkaning POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:SDL3::SDL3>
@@ -134,6 +134,12 @@ add_custom_command(TARGET Vulkaning POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:ktx>
         $<TARGET_FILE_DIR:Vulkaning>
+)
+
+add_custom_command(TARGET Vulkaning POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_SOURCE_DIR}/res
+        ${CMAKE_CURRENT_BINARY_DIR}/res
 )
 
 # Enable clangd
