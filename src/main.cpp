@@ -525,9 +525,8 @@ int main(int argc, char* argv[]) {
     struct ShaderData {
         glm::mat4 projection;
         glm::mat4 view;
-        glm::mat4 model[3];
+        glm::mat4 model;
         glm::vec4 lightPos{ 0.0f, -10.0f, 10.0f, 0.0f };
-        uint32_t selected{ 1 };
     };
     
     ShaderData shaderData{};
@@ -1207,7 +1206,7 @@ int main(int argc, char* argv[]) {
     bool quit{ false };
     uint32_t imageIndex{ 0 };
     uint32_t frameIndex{ 0 };
-    glm::vec3 objectRotations[3]{};
+    glm::vec3 objectRotations{};
     glm::vec3 camPos{ 0.0f, 0.0f, -6.0f };
     while (!quit) {
         // Wait on fence
@@ -1235,10 +1234,7 @@ int main(int argc, char* argv[]) {
         */
         shaderData.projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y), 0.1f, 32.0f);
         shaderData.view = glm::translate(glm::mat4(1.0f), camPos);
-        for (int i { 0 }; i < 3; i++) {
-            auto instancePos = glm::vec3(static_cast<float>(i-1) * 3.0f, 0.0f, 0.0f);
-            shaderData.model[i] = glm::translate(glm::mat4(1.0f), instancePos) * glm::mat4_cast(glm::quat(objectRotations[i]));
-        }
+        shaderData.model = glm::mat4_cast(glm::quat(objectRotations));
 
         memcpy(shaderDataBuffers[frameIndex].allocationInfo.pMappedData, &shaderData, sizeof(ShaderData));
         
@@ -1340,7 +1336,7 @@ int main(int argc, char* argv[]) {
             .imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL,
             .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-            .clearValue{ .color{ 0.0f, 0.0f,0.0f, 1.0f } },
+            .clearValue{ .color{ 0.5f, 0.0f,0.0f, 1.0f } },
         };
     
         VkRenderingAttachmentInfo depthAttachmentInfo {
@@ -1494,25 +1490,14 @@ int main(int argc, char* argv[]) {
             // Rotate the selected object with mouse drag
             if (event.type == SDL_EVENT_MOUSE_MOTION) {
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    objectRotations[shaderData.selected].x -= static_cast<float>(event.motion.yrel) * elapsedTime;
-                    objectRotations[shaderData.selected].y += static_cast<float>(event.motion.xrel) * elapsedTime;
+                    objectRotations.x -= static_cast<float>(event.motion.yrel) * elapsedTime;
+                    objectRotations.y += static_cast<float>(event.motion.xrel) * elapsedTime;
                 }
             }
 
             // Zooming in with the mouse wheel
             if (event.type == SDL_EVENT_MOUSE_WHEEL) {
                 camPos.z += static_cast<float>(event.wheel.y) * elapsedTime * 10.0f;
-            }
-
-            // Select active model instance
-            if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (event.key.key == SDLK_PLUS || event.key.key == SDLK_KP_PLUS) {
-                    shaderData.selected = (shaderData.selected < 2) ? shaderData.selected + 1 : 0;
-                }
-
-                if (event.key.key == SDLK_MINUS || event.key.key == SDLK_KP_MINUS) {
-                    shaderData.selected = (shaderData.selected > 0) ? shaderData.selected - 1 : 2;
-                }
             }
 
             // Window resize
