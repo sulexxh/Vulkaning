@@ -51,29 +51,6 @@ if (LINUX)
     set(CMAKE_CXX_FLAG "${CMAKE_CXX_FLAGS} -DVK_USE_PLATFORM_WAYLAND_KHR")
 endif()
 
-# ImGui library creation (It don't have CMakeLists.txt)
-add_library(ImGui SHARED
-    lib/ImGui/imgui.cpp
-    lib/ImGui/imgui_draw.cpp
-    lib/ImGui/imgui_tables.cpp
-    lib/ImGui/imgui_widgets.cpp
-    lib/ImGui/backends/imgui_impl_sdl3.cpp
-    lib/ImGui/backends/imgui_impl_vulkan.cpp
-)
-
-target_include_directories(ImGui PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/ImGui/..
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/ImGui/
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/ImGui/backends
-)
-
-target_compile_definitions(ImGui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
-
-target_link_libraries(ImGui PUBLIC
-    SDL3::SDL3
-    Vulkan::Vulkan
-)
-
 # Create final executable
 add_executable(Vulkaning)
 
@@ -97,14 +74,6 @@ elseif (UNIX)
     )
 endif()
 
-# Fix duplicate definitions from ImGui
-target_compile_definitions(Vulkaning PRIVATE
-    VOLK_IMPLEMENTATION
-    VK_NO_PROTOTYPES
-    VMA_IMPLEMENTATION
-    TINYOBJLOADER_IMPLEMENTATION
-)
-
 # Link libraries to executable
 target_link_libraries(Vulkaning PRIVATE
     SDL3::SDL3
@@ -114,7 +83,6 @@ target_link_libraries(Vulkaning PRIVATE
     volk
     glm
     tinyobjloader
-    ImGui
     slang::slang
     ktx
 )

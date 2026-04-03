@@ -9,7 +9,7 @@
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan.h>
 
-#include <volk/volk.h>
+#include <volk.h>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
