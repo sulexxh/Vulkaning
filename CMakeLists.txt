@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/app")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/app")
 set(CMAKE_CURRENT_BINARY_DIR "${PROJECT_SOURCE_DIR}/bin/app")
+
 # SDL3 Compilation flags
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
@@ -82,6 +83,7 @@ target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_sources(Vulkaning PRIVATE
     src/main.cpp
+    src/vkEngine.cpp        src/vkEngine.h
 )
 
 # Make the executable look for shared libraries in its own directory
