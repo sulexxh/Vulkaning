@@ -733,6 +733,13 @@ void initModel() {
     memcpy(vBufferAllocInfo.pMappedData, vertices.data(), vBufSize);
     memcpy(((char*)vBufferAllocInfo.pMappedData) + vBufSize, indices.data(), iBufSize);
 
+    vertices.clear();
+    vertices.shrink_to_fit();
+    indices.clear();
+    indices.shrink_to_fit();
+    shapes.clear();
+    shapes.shrink_to_fit();
+
     // Vertex binding
     /*
         We need to specify the vertex structure we previously made into Vulkan terms. We use a single vertex buffer, so
@@ -1481,7 +1488,7 @@ void run() {
         vkCmdPushConstants(cb, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VkDeviceAddress), &shaderDataBuffers[frameIndex].deviceAddress);
     
         // Draw command and finish render pass
-        vkCmdDrawIndexed(cb, indexCount, 3, 0, 0, 0);
+        vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
         vkCmdEndRendering(cb);
     
         // Transition the swapchain image to a layout to present
