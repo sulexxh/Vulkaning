@@ -39,7 +39,6 @@ set(KTX_FEATURE_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
 add_subdirectory(lib/GLM EXCLUDE_FROM_ALL)
 add_subdirectory(lib/vma EXCLUDE_FROM_ALL)
-add_subdirectory(lib/vk-bootstrap EXCLUDE_FROM_ALL)
 add_subdirectory(lib/TinyObjLoader EXCLUDE_FROM_ALL)
 add_subdirectory(lib/volk EXCLUDE_FROM_ALL)
 add_subdirectory(lib/ktx EXCLUDE_FROM_ALL)
@@ -57,6 +56,7 @@ add_executable(Vulkaning)
 # Add source code to executable
 target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(Vulkaning PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(Vulkaning PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 target_sources(Vulkaning PRIVATE
     src/main.cpp
@@ -79,7 +79,6 @@ target_link_libraries(Vulkaning PRIVATE
     SDL3::SDL3
     Vulkan::Vulkan
     VulkanMemoryAllocator
-    vk-bootstrap
     volk
     glm
     tinyobjloader
@@ -91,12 +90,6 @@ target_link_libraries(Vulkaning PRIVATE
 add_custom_command(TARGET Vulkaning POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:SDL3::SDL3>
-        $<TARGET_FILE_DIR:Vulkaning>
-)
-
-add_custom_command(TARGET Vulkaning POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:vk-bootstrap>
         $<TARGET_FILE_DIR:Vulkaning>
 )
 
