@@ -6,25 +6,15 @@
 #ifndef VK_NO_PROTOTYPES
 #define VK_NO_PROTOTYPES
 #endif
-#include <vulkan/vulkan_core.h>
-#include <vulkan/vulkan.h>
-
 #include <volk.h>
-
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_vulkan.h>
-
-#include <vector>
-#include <array>
-#include <string>
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
 
 #ifndef VMA_IMPLEMENTATION
 #define VMA_IMPLEMENTATION
 #endif
 #include <vk_mem_alloc.h>
+
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -42,6 +32,13 @@
 
 #include <ktx.h>
 #include <ktxvulkan.h>
+
+#include <vector>
+#include <array>
+#include <string>
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
 
 VkInstance instance{ VK_NULL_HANDLE };
 VkDevice device{ VK_NULL_HANDLE };
@@ -994,6 +991,7 @@ void initTextures() {
             .imageLayout = VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL,
         });
     }
+
 
     return;
 }
